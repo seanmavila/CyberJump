@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
         moveInput = Input.GetAxisRaw("Horizontal");
 
         // Checks if the character is grounded
-        isGrounded = Physics2D.OverlapBox(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - 0.8f), new Vector2(0.8f, 0.2f), 0f, groundMask);
+        isGrounded = Physics2D.OverlapBox(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - 0.45f), new Vector2(0.97f, 0.2f), 0f, groundMask);
 
         playerAnim.SetBool("isJumping", !isGrounded);
         playerAnim.SetFloat("yVelocity", playerRb.velocity.y);
@@ -139,7 +139,7 @@ public class PlayerController : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawCube(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - 0.8f), new Vector2(0.8f, 0.2f));
+        Gizmos.DrawCube(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - 0.45f ), new Vector2(0.97f, 0.2f));
     }
 
 
