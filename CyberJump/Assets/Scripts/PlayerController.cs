@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public bool canJump = true;
     public float jumpForce = 0.0f;
     public PhysicsMaterial2D bounceMat, normalMat;
+    public AudioClip jumpSound;
     
 
     private float moveInput;
@@ -91,7 +92,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && isGrounded && canJump)
         {
             playerRb.velocity = new Vector2(0f, 0f);
-            jumpForce += 0.1f;
+            jumpForce += 0.05f;
             playerAnim.SetBool("isCrouching", true);
             playerAnim.SetBool("isRunning", false);
         }
