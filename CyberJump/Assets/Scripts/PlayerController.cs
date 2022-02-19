@@ -15,8 +15,12 @@ public class PlayerController : MonoBehaviour
 
     private float moveInput;
     private Rigidbody2D playerRb;
+    private BoxCollider2D playerBc;
     private Animator playerAnim;
     private bool isMoving = false;
+    [SerializeField] private float bcHeight = 0.2f;
+    private Vector2 tempBc;
+    [SerializeField] private float jumpLimit = 20f;
 
 
     // Start is called before the first frame update
@@ -24,6 +28,7 @@ public class PlayerController : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
+        playerBc = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -92,7 +97,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && isGrounded && canJump)
         {
             playerRb.velocity = new Vector2(0f, 0f);
-            jumpForce += 0.05f;
+            jumpForce += 20f * Time.deltaTime;
             playerAnim.SetBool("isCrouching", true);
             playerAnim.SetBool("isRunning", false);
         }
@@ -104,7 +109,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Automatic jump once players jump charge reaches 20
-        if (jumpForce >= 20f && isGrounded)
+        if (jumpForce >= jumpLimit && isGrounded)
         {
             float tempX = moveInput * walkSpeed;
             float tempY = jumpForce;
@@ -127,6 +132,7 @@ public class PlayerController : MonoBehaviour
             }
             canJump = true;
         }
+
     }
 
     // Resets players jump state
