@@ -12,13 +12,14 @@ public class PlayerController : MonoBehaviour
     public PhysicsMaterial2D bounceMat, normalMat;
     public AudioClip jumpSound;
     public AudioClip bounceSound;
-    
+    public GameObject dialogueContainer;
+
 
     private float moveInput;
     private Rigidbody2D playerRb;
     private Animator playerAnim;
     private bool isMoving = false;
-    private bool canBounce;
+    private Vector2 lookDirection = new Vector2(1, 0);
     [SerializeField] private float jumpLimit = 20f;
 
 
@@ -33,12 +34,19 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         PlayerJump();
+        LookForNPC();
     }
 
     void PlayerJump()
     {
         // Get input axis
         moveInput = Input.GetAxisRaw("Horizontal");
+        Vector2 move = new Vector2(moveInput, 0f);
+        if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
+        {
+            lookDirection.Set(move.x, move.y);
+            lookDirection.Normalize();
+        }
 
         // Checks if the character is grounded
         isGrounded = Physics2D.OverlapBox(new Vector2(gameObject.transform.position.x - 0.095f, gameObject.transform.position.y - 1f), new Vector2(0.65f, 0.1f), 0f, groundMask);
@@ -95,7 +103,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && isGrounded && canJump)
         {
             playerRb.velocity = new Vector2(0f, 0f);
-            jumpForce += 20f * Time.deltaTime;
+            jumpForce += 15f * Time.deltaTime;
             playerAnim.SetBool("isCrouching", true);
             playerAnim.SetBool("isRunning", false);
         }
@@ -142,6 +150,26 @@ public class PlayerController : MonoBehaviour
         jumpForce = 0;
     }
 
+    public void LookForNPC()
+    {
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            RaycastHit2D hit = Physics2D.Raycast(playerRb.position + Vector2.up * 0.2f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
+            NonPlayerCharacter character = hit.collider.GetComponent<NonPlayerCharacter>();
+            if (hit.collider != null)
+            {
+                character.DisplayDialog(1);
+                StartCoroutine(dialogueTimer(character));
+            }
+        }
+    }
+
+    IEnumerator dialogueTimer(NonPlayerCharacter character)
+    {
+        yield return new WaitForSeconds(4);
+        character.DisplayDialog(2);
+    }
+
     //Draws the isGrounded overlapbox shape and position
     private void OnDrawGizmosSelected()
     {
@@ -155,8 +183,22 @@ public class PlayerController : MonoBehaviour
         {
             SoundManager.instance.PlaySingle(bounceSound);
         }
+
+        if(collision.tag == "Dialogue")
+        {
+            dialogueContainer.SetActive(true);
+        }
         
     }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "Dialogue")
+        {
+            dialogueContainer.SetActive(false);
+        }
+    }
+
+
 
 
 }

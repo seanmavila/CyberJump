@@ -44,7 +44,6 @@ public class MenuUIHandler : MonoBehaviour
     public void GoToSound()
     {
         soundWindow.SetActive(true);
-        
     }
 
     public void OpenInstructions()
