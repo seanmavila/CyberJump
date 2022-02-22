@@ -21,4 +21,6 @@ public class SpawnManager : MonoBehaviour
         int randIndex = Random.Range(0, palmTrees.Length - 1);
         Instantiate(palmTrees[randIndex], spawnPos, palmTrees[randIndex].transform.rotation);
     }
+
+    
 }

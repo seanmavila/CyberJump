@@ -12,13 +12,18 @@ public class PlayerController : MonoBehaviour
     public PhysicsMaterial2D bounceMat, normalMat;
     public AudioClip jumpSound;
     public AudioClip bounceSound;
+    public AudioClip partySong;
     public GameObject dialogueContainer;
+    public NonPlayerCharacter npcEndGame;
+    public PizzaSpawn spwnManager;
+    public GameObject gameOverPanel;
 
 
     private float moveInput;
     private Rigidbody2D playerRb;
     private Animator playerAnim;
     private bool isMoving = false;
+    private bool gameEnd = false;
     private Vector2 lookDirection = new Vector2(1, 0);
     [SerializeField] private float jumpLimit = 20f;
 
@@ -28,13 +33,25 @@ public class PlayerController : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
+        gameOverPanel.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        PlayerJump();
-        LookForNPC();
+        if (!gameEnd)
+        {
+            PlayerJump();
+            LookForNPC();
+        }
+        else
+        {
+            playerAnim.SetBool("isJumping", false);
+            playerAnim.SetBool("isRunning", false);
+            playerAnim.SetBool("isFalling", false);
+            playerAnim.SetBool("isCrouching", false);            
+        }
+        
     }
 
     void PlayerJump()
@@ -167,7 +184,26 @@ public class PlayerController : MonoBehaviour
     IEnumerator dialogueTimer(NonPlayerCharacter character)
     {
         yield return new WaitForSeconds(4);
-        character.DisplayDialog(2);
+        if (gameEnd)
+        {
+            character.NpcGameEnd(2);
+            playerAnim.SetBool("gameOver", true);
+            spwnManager.SpawnStart();
+            SoundManager.instance.ChangeMusic(partySong);
+            StartCoroutine(GameOverScreen());
+
+        }
+        else
+        {
+            character.DisplayDialog(2);
+        }
+    }
+
+    IEnumerator GameOverScreen()
+    {
+        yield return new WaitForSeconds(14);
+        gameOverPanel.SetActive(true);
+        Cursor.visible = true;
     }
 
     //Draws the isGrounded overlapbox shape and position
@@ -179,7 +215,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!isGrounded)
+        if (!isGrounded && collision.tag != "Pizza")
         {
             SoundManager.instance.PlaySingle(bounceSound);
         }
@@ -187,6 +223,14 @@ public class PlayerController : MonoBehaviour
         if(collision.tag == "Dialogue")
         {
             dialogueContainer.SetActive(true);
+        }
+
+        if(collision.tag == "Game End")
+        {
+            gameEnd = true;
+            SoundManager.instance.MusicStop();
+            npcEndGame.NpcGameEnd(1);
+            StartCoroutine(dialogueTimer(npcEndGame));
         }
         
     }

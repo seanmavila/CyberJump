@@ -50,4 +50,15 @@ public class MenuUIHandler : MonoBehaviour
     {
         instructionWindow.SetActive(true);
     }
+
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene(0);
+        SoundManager.instance.MusicStop();
+        SoundManager.instance.ResetMusic();
+    }
+    public void GoToCredits()
+    {
+        SceneManager.LoadScene(2);
+    }
 }

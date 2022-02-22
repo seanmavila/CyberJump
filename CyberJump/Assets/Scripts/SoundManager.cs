@@ -7,6 +7,7 @@ public class SoundManager : MonoBehaviour
 {
     public AudioSource efxSource;
     public AudioSource musicSource;
+    public AudioClip mainMusic;
     public static SoundManager instance = null;
 
     private Slider volumeSlider;
@@ -33,8 +34,9 @@ public class SoundManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
         DontDestroyOnLoad(gameObject);
+
+        SetVolumeSlider();
     }
 
     public void PlaySingle(AudioClip clip)
@@ -44,6 +46,17 @@ public class SoundManager : MonoBehaviour
         efxSource.pitch = randomPitch;
         efxSource.clip = clip;
         efxSource.Play();
+    }
+
+    public void ChangeMusic(AudioClip clip)
+    {
+        musicSource.clip = clip;
+        musicSource.Play();
+    }
+
+    public void MusicStop()
+    {
+        musicSource.Pause();
     }
 
     public void KillSound()
@@ -82,5 +95,10 @@ public class SoundManager : MonoBehaviour
         }
 
         
+    }
+
+    public void ResetMusic()
+    {
+        ChangeMusic(mainMusic);
     }
 }

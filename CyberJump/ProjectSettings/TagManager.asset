@@ -9,6 +9,8 @@ TagManager:
   - Npc
   - Container
   - Dialogue
+  - Game End
+  - Pizza
   layers:
   - Default
   - TransparentFX
