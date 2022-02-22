@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     {
         exitMenu = GameObject.Find("Exit Menu");
         exitMenu.SetActive(false);
+        Cursor.visible = false;
+        SoundManager.instance.SetVolumeSlider();
     }
 
     private void Update()
@@ -41,7 +43,10 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             menuOpen = !menuOpen;
+            Cursor.visible = menuOpen;
             exitMenu.SetActive(menuOpen);
+            
+            
         }
     }
 }

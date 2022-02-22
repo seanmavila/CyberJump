@@ -11,15 +11,14 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 0.0f;
     public PhysicsMaterial2D bounceMat, normalMat;
     public AudioClip jumpSound;
+    public AudioClip bounceSound;
     
 
     private float moveInput;
     private Rigidbody2D playerRb;
-    private BoxCollider2D playerBc;
     private Animator playerAnim;
     private bool isMoving = false;
-    [SerializeField] private float bcHeight = 0.2f;
-    private Vector2 tempBc;
+    private bool canBounce;
     [SerializeField] private float jumpLimit = 20f;
 
 
@@ -28,7 +27,6 @@ public class PlayerController : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
-        playerBc = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -114,9 +112,10 @@ public class PlayerController : MonoBehaviour
             float tempX = moveInput * walkSpeed;
             float tempY = jumpForce;
             playerRb.velocity = new Vector2(tempX, tempY);
-            Invoke("ResetJump", 0.2f);
+            Invoke("ResetJump", 0.1f);
             playerAnim.SetBool("isCrouching", false);
             playerAnim.SetBool("isRunning", false);
+            SoundManager.instance.PlaySingle(jumpSound);
         }
 
         // Player jumps with current jumpForce value
@@ -128,6 +127,7 @@ public class PlayerController : MonoBehaviour
                 jumpForce = 0.0f;
                 playerAnim.SetBool("isCrouching", false);
                 playerAnim.SetBool("isRunning", false);
+                SoundManager.instance.PlaySingle(jumpSound);
 
             }
             canJump = true;
@@ -147,6 +147,15 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawCube(new Vector2(gameObject.transform.position.x - 0.095f, gameObject.transform.position.y - 1f), new Vector2(0.65f, 0.1f));
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!isGrounded)
+        {
+            SoundManager.instance.PlaySingle(bounceSound);
+        }
+        
     }
 
 
